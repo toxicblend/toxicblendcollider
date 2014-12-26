@@ -1,6 +1,9 @@
 package org.toxicblend.collider.slave
 
-import akka.actor._
+import akka.actor.ActorRef
+import akka.actor.ActorLogging
+import akka.actor.Actor
+import akka.actor.Props
 import com.typesafe.config.ConfigFactory
 import akka.actor.ActorSelection.toScala
 import org.toxicblend.collider.multiplex.MultiplexManager
@@ -12,18 +15,6 @@ import org.toxicblend.collider.messages.WorkRequest
 import org.toxicblend.collider.messages.Work
 import org.toxicblend.collider.messages.WorkResult
 import org.toxicblend.collider.messages.PrepareSlaveWorkers
-
-class SlaveWorker extends Actor with ActorLogging {
-
-  def receive = {
-    
-    case wr:Work => {
-      log.info("initiated SlaveWorker received WorkRequestAck" + wr)
-      sender ! new WorkResult(self, wr.work.toUpperCase + " is solved")
-    }
-    case x => log.info("******** received unknown message: " + x.toString)
-  } 
-}
 
 class SlaveManager extends Actor with ActorLogging {
   
@@ -42,7 +33,7 @@ class SlaveManager extends Actor with ActorLogging {
     
     case ppsw:PrepareSlaveWorkers => {
       for (i <- 0 until 8){
-         val aWorker = context.actorOf(Props[SlaveWorker], name = "slaveWorker" + sessionId + ":" + i )
+         val aWorker = context.actorOf(Props(classOf[SlaveWorker], ppsw.settings), name = "slaveWorker" + sessionId + ":" + i )
          workers.append(aWorker)
          sender ! new WorkRequest(aWorker)
        }
@@ -55,14 +46,4 @@ class SlaveManager extends Actor with ActorLogging {
     
     case x => log.info("******** received unknown message: " + x)
   } 
-}
-
-object SlaveStart extends App {
-  val config = ConfigFactory.load()
-  val system = ActorSystem("slaveSystem", config.getConfig("slaveConf").withFallback(config))
-  val slaveManager = system.actorOf(Props[SlaveManager], name = "slaveManager")
-  val multiplexManager = system.actorSelection("akka.tcp://multiplexSystem@127.0.0.1:4224/user/multiplexManager")
-  multiplexManager ! new RegisterSlaveManager(slaveManager)
-  
-  //remoteMultiplexor ! "Test message"
 }
