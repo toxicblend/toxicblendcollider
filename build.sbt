@@ -2,15 +2,13 @@ lazy val toxicblendcollider= project.in( file(".")).aggregate(Projects.jbulletd)
 
 version := "0.1"
 
-scalaVersion := "2.10.4"
+scalaVersion := "2.11.4"
 
 libraryDependencies ++= Seq(
-  "org.scalatest" % "scalatest_2.10" % "2.0" % "test",
-  "java3d" % "vecmath" % "1.5.2",
-  "com.typesafe.akka" %% "akka-actor" % "2.4-SNAPSHOT"
+	"org.scalatest" % "scalatest_2.11" % "2.2.1" % "test",
+	"com.typesafe.akka" %% "akka-actor" % "2.3.8",
+	"com.typesafe.akka" %% "akka-remote" % "2.3.8"
 )
-
-resolvers += "Geotoolkit.org" at "http://maven.geotoolkit.org"
 
 publishMavenStyle := true
 
