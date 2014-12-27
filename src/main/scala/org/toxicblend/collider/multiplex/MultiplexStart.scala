@@ -12,4 +12,6 @@ object MultiplexStart extends App {
   val system = ActorSystem("multiplexSystem", config.getConfig("multiplexConf").withFallback(config))
   val actor = system.actorOf(Props[MultiplexManager], name = "multiplexManager")
   println("MultiplexStart started")
+
+  def shutdown = system.shutdown
 }

@@ -12,6 +12,6 @@ object SlaveStart extends App {
   val slaveManager = system.actorOf(Props[SlaveManager], name = "slaveManager")
   val multiplexManager = system.actorSelection("akka.tcp://multiplexSystem@127.0.0.1:4224/user/multiplexManager")
   multiplexManager ! new RegisterSlaveManager(slaveManager)
-  
-  //remoteMultiplexor ! "Test message"
+
+  def shutdown = system.shutdown
 }

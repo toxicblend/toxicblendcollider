@@ -21,6 +21,7 @@ object TellMeWhenYoureConfigured
 object Configured
 
 object ClientStart extends App {
+  private var iIsDone = false
 
   val config = ConfigFactory.load()
   val system = ActorSystem("clientSystem", config.getConfig("clientConf").withFallback(config))
@@ -34,4 +35,8 @@ object ClientStart extends App {
   val rv = ClientActor.work(localClient, new Work("Solve Jacobian conjecture"), timeout)
   println("result is : " + rv.result)
   println("******************  client is done *********************")
+  iIsDone = true
+
+  def isDone = iIsDone
+  def shutdown = system.shutdown
 }
